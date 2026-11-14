@@ -101,6 +101,10 @@
     const u = watched(h) ? uptime[h.id] : undefined
     const at = `${h.target.address}, port ${h.target.port}`
     if (s?.self) return { text: `Points back at this proxy · edit it and give the address the service has, not ${h.target.address}`, ok: false }
+    if (h.goneSince) {
+      const until = new Date(new Date(h.goneSince).getTime() + 7 * 864e5).toLocaleDateString()
+      return { text: `Container stopped since ${when(h.goneSince)} · the name comes back with it, or goes on ${until}`, ok: false }
+    }
     if (u?.state === 'down' && u.never) return { text: `Never reached · check that the proxy can reach ${at}`, ok: false }
     if (u?.state === 'down') return { text: `Not responding since ${when(u.since ?? '')} · check that the service at ${at} is running`, ok: false }
     if (u?.state === 'up' || s?.reachable) return { text: `Working · goes to ${at}`, ok: true }

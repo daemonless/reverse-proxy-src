@@ -160,6 +160,10 @@ type Host struct {
 	Note      string     `json:"note,omitempty"`
 	CreatedAt time.Time  `json:"createdAt"`
 	DeletedAt *time.Time `json:"deletedAt,omitempty"` // soft delete; Undo clears it
+	// GoneSince: a container-label name whose container is gone (fjord's
+	// Stop and `compose down` delete it). The name stays, down, until the
+	// container is back or podman.GoneFor has passed.
+	GoneSince *time.Time `json:"goneSince,omitempty"`
 	// Held is a container-label name removed by turning container labels
 	// off: kept past the undo window, so turning them on again brings it
 	// back as it was.

@@ -4,6 +4,7 @@ import (
 	"net"
 	"strings"
 	"testing"
+	"time"
 )
 
 func host(id, name, ref, addr string, port int) Host {
@@ -33,8 +34,14 @@ func TestReconcileCreateUpdateDelete(t *testing.T) {
 	if !ok || up.Target.Address != "10.88.0.5" || strings.Join(up.TrustedNetworks, ",") != "10.0.0.0/8" {
 		t.Fatalf("update keeps the UI's fields: %+v", p.Update)
 	}
-	if len(p.Delete) != 1 || p.Delete[0] != "h2" {
-		t.Fatalf("delete only the podman host whose container is gone: %v", p.Delete)
+	if len(p.Delete) != 0 {
+		t.Fatalf("a gone container's name is kept, not deleted: %v", p.Delete)
+	}
+	if g, ok := p.Update["h2"]; !ok || g.Gone == nil || !*g.Gone || g.Target.Address != "10.88.0.7" {
+		t.Fatalf("a gone container's name is marked gone, target kept: %+v", p.Update["h2"])
+	}
+	if _, ok := p.Update["h3"]; ok {
+		t.Fatal("a fjord name is not touched")
 	}
 	if len(p.Problems) != 0 {
 		t.Fatalf("problems: %v", p.Problems)
@@ -161,5 +168,43 @@ func TestReconcileOtherNameSamePlaceIsNoted(t *testing.T) {
 	}
 	if len(p.Elsewhere) != 1 || p.Elsewhere[0].Message != "also named sonarr by fjord on jupiter" {
 		t.Fatalf("elsewhere: %+v", p.Elsewhere)
+	}
+}
+
+// fjord's Stop runs `compose down`, which deletes the container: its name
+// stays, marked gone (uptime shows it down), comes back with the container,
+// and goes only after GoneFor.
+func TestGoneContainerKeepsItsNameForAWeek(t *testing.T) {
+	now := time.Date(2026, 11, 14, 10, 0, 0, 0, time.UTC)
+	e := env
+	e.Now = now
+	h := host("h1", "lidarr", "podman:lidarr_lidarr_1", "10.88.0.5", 8686)
+
+	p := Reconcile(nil, []Host{h}, e)
+	if g := p.Update["h1"]; g.Gone == nil || !*g.Gone || len(p.Delete) != 0 {
+		t.Fatalf("just gone: marked, kept: %+v", p)
+	}
+
+	since := now.Add(-6 * 24 * time.Hour)
+	h.GoneSince = &since
+	p = Reconcile(nil, []Host{h}, e)
+	if len(p.Update)+len(p.Delete) != 0 {
+		t.Fatalf("gone 6 days: nothing to do: %+v", p)
+	}
+
+	since = now.Add(-8 * 24 * time.Hour)
+	p = Reconcile(nil, []Host{h}, e)
+	if len(p.Delete) != 1 || p.Delete[0] != "h1" {
+		t.Fatalf("gone 8 days: removed: %+v", p)
+	}
+
+	// back, on a new address (fjord Start after Stop)
+	since = now.Add(-time.Hour)
+	c := ct("lidarr_lidarr_1", map[string]string{LabelName: "lidarr", LabelPort: "8686"})
+	c.IPs["podman"], c.Addrs = "10.88.0.9", []net.IP{net.ParseIP("10.88.0.9")}
+	p = Reconcile([]Container{c}, []Host{h}, e)
+	up, ok := p.Update["h1"]
+	if !ok || up.Gone == nil || *up.Gone || up.Target.Address != "10.88.0.9" || len(p.Create)+len(p.Delete) != 0 {
+		t.Fatalf("back: same host, gone cleared, new address: %+v", p)
 	}
 }

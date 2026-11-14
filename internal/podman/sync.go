@@ -4,20 +4,27 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"time"
 )
+
+// GoneFor is how long a name stays after its container is gone: fjord's
+// Stop and `compose down` delete the container, and the name should show
+// the app as down, not vanish. After this the container counts as removed.
+const GoneFor = 7 * 24 * time.Hour
 
 // Host is the slice of the admin's host view the sync compares against.
 type Host struct {
-	ID              string   `json:"id"`
-	Name            string   `json:"name"`
-	ExtraNames      []string `json:"extraNames,omitempty"`
-	Ref             string   `json:"ref,omitempty"`
-	Access          string   `json:"access"`
-	TrustedNetworks []string `json:"trustedNetworks,omitempty"`
-	OwnOrigin       bool     `json:"ownOrigin,omitempty"`
-	Note            string   `json:"note,omitempty"`
-	Unwatched       bool     `json:"unwatched,omitempty"`
-	By              string   `json:"by,omitempty"`
+	ID              string     `json:"id"`
+	Name            string     `json:"name"`
+	ExtraNames      []string   `json:"extraNames,omitempty"`
+	Ref             string     `json:"ref,omitempty"`
+	Access          string     `json:"access"`
+	TrustedNetworks []string   `json:"trustedNetworks,omitempty"`
+	OwnOrigin       bool       `json:"ownOrigin,omitempty"`
+	Note            string     `json:"note,omitempty"`
+	Unwatched       bool       `json:"unwatched,omitempty"`
+	By              string     `json:"by,omitempty"`
+	GoneSince       *time.Time `json:"goneSince,omitempty"`
 	Target          struct {
 		Address         string `json:"address"`
 		Port            int    `json:"port"`
@@ -36,6 +43,7 @@ type HostInput struct {
 	TrustedNetworks []string `json:"trustedNetworks"`
 	OwnOrigin       *bool    `json:"ownOrigin,omitempty"`
 	Note            *string  `json:"note,omitempty"`
+	Gone            *bool    `json:"gone,omitempty"`
 	Target          struct {
 		Address         string `json:"address"`
 		Port            int    `json:"port"`
@@ -63,10 +71,11 @@ type Plan struct {
 
 // Env is what the plan needs to know about the proxy itself.
 type Env struct {
-	Self        string // the proxy's own container name, skipped
-	Reach       Reach  // what the proxy reaches directly
-	HostAddress string // the host's address, for published ports and host-network containers
-	HomeOnly    bool   // no internet names possible
+	Self        string    // the proxy's own container name, skipped
+	Reach       Reach     // what the proxy reaches directly
+	HostAddress string    // the host's address, for published ports and host-network containers
+	HomeOnly    bool      // no internet names possible
+	Now         time.Time // for GoneFor; zero means time.Now()
 	// HostNames are every way a name can point at the host itself: its
 	// addresses and its name. A published port behind any of them is the
 	// container's.
@@ -228,6 +237,10 @@ func Reconcile(containers []Container, hosts []Host, env Env) Plan {
 			continue
 		}
 		seen[existing.ID] = true
+		if existing.GoneSince != nil {
+			back := false
+			in.Gone = &back
+		}
 		in.TrustedNetworks = existing.TrustedNetworks
 		if in.TrustedNetworks == nil {
 			in.TrustedNetworks = []string{}
@@ -236,8 +249,30 @@ func Reconcile(containers []Container, hosts []Host, env Env) Plan {
 			p.Update[existing.ID] = in
 		}
 	}
+	now := env.Now
+	if now.IsZero() {
+		now = time.Now()
+	}
 	for _, h := range hosts {
-		if strings.HasPrefix(h.Ref, RefPrefix) && !seen[h.ID] {
+		if !strings.HasPrefix(h.Ref, RefPrefix) || seen[h.ID] {
+			continue
+		}
+		switch {
+		case h.GoneSince == nil:
+			// Just gone: keep the name as it is, marked, so uptime shows
+			// the app down until it comes back.
+			in := HostInput{Name: h.Name, ExtraNames: h.ExtraNames, Ref: h.Ref, Access: h.Access, TrustedNetworks: h.TrustedNetworks}
+			if in.ExtraNames == nil {
+				in.ExtraNames = []string{}
+			}
+			if in.TrustedNetworks == nil {
+				in.TrustedNetworks = []string{}
+			}
+			in.Target.Address, in.Target.Port, in.Target.HTTPS, in.Target.AcceptUntrusted = h.Target.Address, h.Target.Port, h.Target.HTTPS, h.Target.AcceptUntrusted
+			gone := true
+			in.Gone = &gone
+			p.Update[h.ID] = in
+		case now.Sub(*h.GoneSince) > GoneFor:
 			p.Delete = append(p.Delete, h.ID)
 		}
 	}
@@ -256,6 +291,9 @@ func differs(h Host, in HostInput) bool {
 		return true
 	}
 	if in.Note != nil && h.Note != *in.Note {
+		return true
+	}
+	if in.Gone != nil && *in.Gone != (h.GoneSince != nil) {
 		return true
 	}
 	return false

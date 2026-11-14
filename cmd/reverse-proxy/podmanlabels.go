@@ -280,14 +280,21 @@ func (u *labelsUnit) reconcile(ctx context.Context, client *podman.Client) {
 			rep.Problems = append(rep.Problems, podman.Problem{Container: strings.TrimPrefix(in.Ref, podman.RefPrefix), Message: err.Error()})
 			continue
 		}
-		u.log.Printf("updated container %s: %s -> %s:%d", strings.TrimPrefix(in.Ref, podman.RefPrefix), in.Name, in.Target.Address, in.Target.Port)
+		switch {
+		case in.Gone != nil && *in.Gone:
+			u.log.Printf("container %s is gone; its name %s stays, down, for %s or until it is back", strings.TrimPrefix(in.Ref, podman.RefPrefix), in.Name, "7 days")
+		case in.Gone != nil:
+			u.log.Printf("container %s is back: %s -> %s:%d", strings.TrimPrefix(in.Ref, podman.RefPrefix), in.Name, in.Target.Address, in.Target.Port)
+		default:
+			u.log.Printf("updated container %s: %s -> %s:%d", strings.TrimPrefix(in.Ref, podman.RefPrefix), in.Name, in.Target.Address, in.Target.Port)
+		}
 	}
 	for _, id := range plan.Delete {
 		if err := u.admin.call(http.MethodDelete, "/api/v1/hosts/"+url.PathEscape(id), nil, nil); err != nil {
 			u.log.Printf("cannot remove host %s: %v", id, err)
 			continue
 		}
-		u.log.Printf("removed the name of a container that is gone (host %s)", id)
+		u.log.Printf("removed the name of a container gone for over 7 days (host %s)", id)
 	}
 	// Problems are logged when they change, not on every event.
 	var lines []string

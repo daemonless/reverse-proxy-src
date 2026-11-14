@@ -31,6 +31,9 @@ type hostInput struct {
 	// Note is kept as it was when absent: only the source that made the
 	// host (podman-labels) sends it.
 	Note *string `json:"note,omitempty"`
+	// Gone marks (true) or clears (false) a container-label name whose
+	// container is gone; absent keeps it as it was.
+	Gone *bool `json:"gone,omitempty"`
 }
 
 // hostView is a host as the API presents it, with the names resolved.
@@ -79,6 +82,14 @@ func (in hostInput) apply(h *state.Host) {
 	}
 	if in.Watch != nil {
 		h.Unwatched = !*in.Watch
+	}
+	if in.Gone != nil {
+		if !*in.Gone {
+			h.GoneSince = nil
+		} else if h.GoneSince == nil {
+			now := time.Now().UTC()
+			h.GoneSince = &now
+		}
 	}
 	if in.Note != nil {
 		h.Note = strings.TrimSpace(*in.Note)

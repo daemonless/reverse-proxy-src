@@ -108,3 +108,34 @@ func TestReaddByHandStartsFresh(t *testing.T) {
 		t.Fatalf("re-added by hand keeps nothing: %d %v", rr.Code, h["trustedNetworks"])
 	}
 }
+
+// gone=true stamps when a container-label name's container went away, a
+// PUT without it keeps the stamp, gone=false clears it.
+func TestGoneMarksAndClears(t *testing.T) {
+	s, _ := newTestServer(t)
+	key := "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+	if _, err := RegisterPairingKey(s.mgr, key, "fjord", "", ""); err != nil {
+		t.Fatal(err)
+	}
+	s.mgr.Apply(func(st *state.State) error { st.Settings.Domain = "apps.lan"; return nil })
+	c := &client{t: t, s: s, bearer: key}
+	_, h := c.do("POST", "/api/v1/hosts", `{"name":"lidarr","ref":"podman:lidarr_lidarr_1","target":{"address":"10.88.0.5","port":8686}}`)
+	id, _ := h["id"].(string)
+	put := func(extra string) map[string]any {
+		t.Helper()
+		rr, out := c.do("PUT", "/api/v1/hosts/"+id, `{"name":"lidarr","ref":"podman:lidarr_lidarr_1","access":"home","trustedNetworks":[],"target":{"address":"10.88.0.5","port":8686}`+extra+`}`)
+		if rr.Code != 200 {
+			t.Fatalf("put %s: %d %v", extra, rr.Code, out)
+		}
+		return out
+	}
+	if out := put(`,"gone":true`); out["goneSince"] == nil {
+		t.Fatalf("gone=true stamps goneSince: %v", out)
+	}
+	if out := put(``); out["goneSince"] == nil {
+		t.Fatalf("a PUT without gone keeps it: %v", out)
+	}
+	if out := put(`,"gone":false`); out["goneSince"] != nil {
+		t.Fatalf("gone=false clears it: %v", out)
+	}
+}

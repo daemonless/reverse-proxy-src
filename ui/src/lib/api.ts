@@ -56,6 +56,8 @@ export type Target = { address: string; port: number; https: boolean; acceptUntr
 export type Host = {
   id: string
   name: string
+  /** A container-label name whose container is gone (stopped by fjord or `compose down`). */
+  goneSince?: string
   extraNames?: string[]
   target: Target
   access: 'home' | 'internet'
