@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
 )
 
 // A code from the admin, redeemed once by a fjord elsewhere, gives it a key

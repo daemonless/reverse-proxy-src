@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
 )
 
 // Turning container labels off removes their names at once, held past the

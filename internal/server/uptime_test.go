@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/uptime"
+	"github.com/daemonless/reverse-proxy-src/internal/uptime"
 )
 
 // The alert address is write-only: an ntfy topic is as good as a password.

@@ -6,8 +6,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/dns"
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/dns"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
 )
 
 // Input is everything the renderer needs.

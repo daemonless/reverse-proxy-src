@@ -22,15 +22,15 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/app"
-	"github.com/daemonless/reverse-proxy/admin/internal/auth"
-	"github.com/daemonless/reverse-proxy/admin/internal/ca"
-	"github.com/daemonless/reverse-proxy/admin/internal/caddy"
-	"github.com/daemonless/reverse-proxy/admin/internal/certs"
-	"github.com/daemonless/reverse-proxy/admin/internal/dns"
-	"github.com/daemonless/reverse-proxy/admin/internal/server"
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
-	"github.com/daemonless/reverse-proxy/admin/internal/uptime"
+	"github.com/daemonless/reverse-proxy-src/internal/app"
+	"github.com/daemonless/reverse-proxy-src/internal/auth"
+	"github.com/daemonless/reverse-proxy-src/internal/ca"
+	"github.com/daemonless/reverse-proxy-src/internal/caddy"
+	"github.com/daemonless/reverse-proxy-src/internal/certs"
+	"github.com/daemonless/reverse-proxy-src/internal/dns"
+	"github.com/daemonless/reverse-proxy-src/internal/server"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/uptime"
 )
 
 var version = "dev"
@@ -52,9 +52,16 @@ func main() {
 		os.Exit(listenCmd(*listen, flag.Args()[1:]))
 	case "podman-labels":
 		os.Exit(podmanLabelsCmd(*listen, flag.Args()[1:]))
+	case "dns-providers":
+		// The image build checks these against `caddy list-modules`: every
+		// provider offered must be compiled into Caddy, and the reverse.
+		for _, p := range dns.Providers {
+			fmt.Println(p.ID)
+		}
+		os.Exit(0)
 	case "":
 	default:
-		fmt.Fprintf(os.Stderr, "reverse-proxy: unknown command %q\n\nCommands:\n  hosts           list, add, remove or restore hosts\n  listen          answer on every network, or on some\n  podman-labels   name containers by their labels (the unit; needs podman's socket)\n  reset-password  forget the password and print a new setup link\n", flag.Arg(0))
+		fmt.Fprintf(os.Stderr, "reverse-proxy: unknown command %q\n\nCommands:\n  dns-providers   the DNS providers offered, one per line (for the image build)\n  hosts           list, add, remove or restore hosts\n  listen          answer on every network, or on some\n  podman-labels   name containers by their labels (the unit; needs podman's socket)\n  reset-password  forget the password and print a new setup link\n", flag.Arg(0))
 		os.Exit(2)
 	}
 	log.Printf("[admin] reverse-proxy %s", version)

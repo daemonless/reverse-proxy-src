@@ -1,4 +1,4 @@
-module github.com/daemonless/reverse-proxy/admin
+module github.com/daemonless/reverse-proxy-src
 
 go 1.26.0
 

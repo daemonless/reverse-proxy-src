@@ -1,0 +1,55 @@
+name: Release
+
+# A v* tag builds the admin for FreeBSD and Linux (amd64, arm64) with the UI
+# built once and embedded, and publishes them as a GitHub release. A tag
+# with a hyphen (v0.4.0-beta.1) is a pre-release.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      - name: UI
+        working-directory: ui
+        run: |
+          npm ci --no-fund --no-audit
+          npm run build
+      - name: Test
+        run: go test ./...
+      - name: Build
+        run: |
+          v="${GITHUB_REF_NAME#v}"
+          mkdir -p release
+          for t in freebsd/amd64 freebsd/arm64 linux/amd64 linux/arm64; do
+            os=${t%/*}; arch=${t#*/}
+            d="reverse-proxy_${v}_${os}_${arch}"
+            mkdir -p "release/$d"
+            GOOS=$os GOARCH=$arch CGO_ENABLED=0 go build -trimpath \
+              -ldflags "-s -w -X main.version=${v}" \
+              -o "release/$d/reverse-proxy" ./cmd/reverse-proxy
+            cp LICENSE "release/$d/"
+            tar -C release -czf "release/$d.tar.gz" "$d"
+            rm -rf "release/$d"
+          done
+          cd release && sha256sum *.tar.gz > SHA256SUMS
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pre=""
+          case "$GITHUB_REF_NAME" in *-*) pre="--prerelease" ;; esac
+          gh release create "$GITHUB_REF_NAME" release/* --title "$GITHUB_REF_NAME" --generate-notes $pre

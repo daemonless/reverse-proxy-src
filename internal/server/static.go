@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/daemonless/reverse-proxy/admin/ui"
+	"github.com/daemonless/reverse-proxy-src/ui"
 )
 
 // uiHandler serves the embedded Svelte app. Hashed assets are immutable;

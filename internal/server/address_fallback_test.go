@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
 )
 
 // A sign-in by name keeps the last IP address as the way back in.

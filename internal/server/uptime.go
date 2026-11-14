@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
-	"github.com/daemonless/reverse-proxy/admin/internal/uptime"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/uptime"
 )
 
 // hostsUptime is the names list's view: each name's state, its percentages

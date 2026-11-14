@@ -16,7 +16,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/podman"
+	"github.com/daemonless/reverse-proxy-src/internal/podman"
 )
 
 // The podman-labels command: the root unit that names containers by their

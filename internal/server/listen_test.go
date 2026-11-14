@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/caddy"
-	"github.com/daemonless/reverse-proxy/admin/internal/netif"
+	"github.com/daemonless/reverse-proxy-src/internal/caddy"
+	"github.com/daemonless/reverse-proxy-src/internal/netif"
 )
 
 // threeNetworks is jupiter's proxy: lan86 for people, two VLANs it reaches

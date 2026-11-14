@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
 )
 
 // Loader pushes a complete configuration into Caddy.

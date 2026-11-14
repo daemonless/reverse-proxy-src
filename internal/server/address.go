@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/caddy"
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/caddy"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
 )
 
 // browserAddress is the host[:port] the browser reached the admin at, or ""

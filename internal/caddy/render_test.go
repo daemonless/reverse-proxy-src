@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/dns"
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/dns"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
 )
 
 var update = flag.Bool("update", false, "rewrite golden files")

@@ -11,8 +11,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/probe"
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/probe"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
 )
 
 // hostInput is what a client may set on a host.

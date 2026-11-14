@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
 )
 
 // A fake Cloudflare: "good" sees ahze.net and its records, "blind" sees no

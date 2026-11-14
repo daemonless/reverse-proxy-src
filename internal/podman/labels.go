@@ -16,7 +16,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/sources"
+	"github.com/daemonless/reverse-proxy-src/internal/sources"
 )
 
 const (

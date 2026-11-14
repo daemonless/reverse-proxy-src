@@ -4,12 +4,10 @@ import (
 	"context"
 	"errors"
 	"net"
-	"os"
 	"path/filepath"
-	"regexp"
 	"testing"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
 )
 
 func TestDetectWalksUpToTheZone(t *testing.T) {
@@ -80,30 +78,22 @@ func TestSaveLoadRemove(t *testing.T) {
 	}
 }
 
-func TestEveryProviderIsCompiledIntoCaddy(t *testing.T) {
-	// The xcaddy --with list in Containerfile.j2.
-	raw, err := os.ReadFile("../../../Containerfile.j2")
-	if err != nil {
-		t.Fatal(err)
+// Every provider is compiled into Caddy: the image build compares
+// `reverse-proxy dns-providers` with `caddy list-modules` (Caddy is built in
+// the image repo). Here: every provider can be filled in.
+func TestEveryProviderHasFieldsAndHelp(t *testing.T) {
+	if len(Providers) < 9 {
+		t.Fatalf("only %d providers", len(Providers))
 	}
-	want := map[string]bool{}
-	for _, m := range regexp.MustCompile(`--with github\.com/caddy-dns/([a-z0-9]+)`).FindAllStringSubmatch(string(raw), -1) {
-		want[m[1]] = true
-	}
-	if len(want) < 9 {
-		t.Fatalf("read only %d modules from Containerfile.j2", len(want))
-	}
+	seen := map[string]bool{}
 	for _, p := range Providers {
-		if !want[p.ID] {
-			t.Errorf("%s is not built into Caddy", p.ID)
+		if seen[p.ID] {
+			t.Errorf("%s twice", p.ID)
 		}
-		delete(want, p.ID)
+		seen[p.ID] = true
 		if len(p.Fields) == 0 || p.Help == "" {
 			t.Errorf("%s needs fields and help", p.ID)
 		}
-	}
-	for id := range want {
-		t.Errorf("%s is built into Caddy but not offered", id)
 	}
 }
 

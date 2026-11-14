@@ -8,10 +8,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/app"
-	"github.com/daemonless/reverse-proxy/admin/internal/certs"
-	"github.com/daemonless/reverse-proxy/admin/internal/dns"
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/app"
+	"github.com/daemonless/reverse-proxy-src/internal/certs"
+	"github.com/daemonless/reverse-proxy-src/internal/dns"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
 )
 
 // certStatus is how the wildcard certificate is doing right now.

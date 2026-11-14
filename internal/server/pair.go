@@ -5,10 +5,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/auth"
-	"github.com/daemonless/reverse-proxy/admin/internal/ca"
-	"github.com/daemonless/reverse-proxy/admin/internal/caddy"
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/auth"
+	"github.com/daemonless/reverse-proxy-src/internal/ca"
+	"github.com/daemonless/reverse-proxy-src/internal/caddy"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
 )
 
 // pairCodeLife is how long a code from "Link an app…" stays good.

@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/backup"
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/backup"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
 )
 
 // createBackup streams an encrypted backup. The passphrase comes in the

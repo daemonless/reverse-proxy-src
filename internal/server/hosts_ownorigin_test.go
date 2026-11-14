@@ -3,7 +3,7 @@ package server
 import (
 	"testing"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
 )
 
 // ownOrigin is set on create, changed only when a PUT names it: fjord's

@@ -8,9 +8,9 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/caddy"
-	"github.com/daemonless/reverse-proxy/admin/internal/netif"
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/caddy"
+	"github.com/daemonless/reverse-proxy-src/internal/netif"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
 )
 
 func (s *Server) networks() []netif.Network {

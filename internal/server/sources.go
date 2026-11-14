@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/sources"
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/sources"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
 )
 
 func (s *Server) getFjordSource(w http.ResponseWriter, _ *http.Request) {

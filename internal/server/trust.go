@@ -12,10 +12,10 @@ import (
 
 	qrcode "github.com/skip2/go-qrcode"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/auth"
-	"github.com/daemonless/reverse-proxy/admin/internal/ca"
-	"github.com/daemonless/reverse-proxy/admin/internal/caddy"
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/auth"
+	"github.com/daemonless/reverse-proxy-src/internal/ca"
+	"github.com/daemonless/reverse-proxy-src/internal/caddy"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
 )
 
 // rootCert hands out the root certificate. It is public by design: trust

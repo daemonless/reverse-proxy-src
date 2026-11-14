@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
 )
 
 // cloudflareAPI is a variable so tests can point it at a fake.

@@ -12,7 +12,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/state"
+	"github.com/daemonless/reverse-proxy-src/internal/state"
 )
 
 // An app's icon, sent by the app that made the name (fjord sends the one

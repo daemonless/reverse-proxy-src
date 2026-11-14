@@ -14,8 +14,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/daemonless/reverse-proxy/admin/internal/app"
-	"github.com/daemonless/reverse-proxy/admin/internal/netif"
+	"github.com/daemonless/reverse-proxy-src/internal/app"
+	"github.com/daemonless/reverse-proxy-src/internal/netif"
 )
 
 // answerOn turns the chosen networks into addresses at every render, and
