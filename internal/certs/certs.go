@@ -191,7 +191,7 @@ func explain(errText, zone, providerLabel string) (msg, detail, kind string) {
 		when := "in an hour"
 		if m := retryAfter.FindStringSubmatch(errText); m != nil {
 			if t, err := time.Parse("2006-01-02 15:04:05 MST", m[1]); err == nil {
-				when = "after " + t.Local().Format("15:04 on Jan 2")
+				when = "after " + t.Local().Format("2006-01-02 15:04")
 			}
 		}
 		return "Let's Encrypt is limiting requests for " + zone + ". It will be tried again " + when + ".", errText, ""
@@ -304,7 +304,7 @@ func Compute(s state.Settings, obs Observation, ev *Event, check *dns.Problem, z
 			st.DaysLeft = int(math.Ceil(obs.NotAfter.Sub(now).Hours() / 24))
 			// Said as soon as it is known, not 10 days before the end: a
 			// revoked token fails every renewal from 30 days out.
-			until := obs.NotAfter.Local().Format("Jan 2")
+			until := obs.NotAfter.Local().Format("2006-01-02")
 			var kind string
 			if fresh && ev.Error != "" {
 				_, _, kind = explain(ev.Error, zone, label)

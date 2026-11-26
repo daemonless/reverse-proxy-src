@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { isoDate } from '../lib/when'
   import { get, put, ApiError, type Certificates, type Provider, type ProviderGuess, type CertStatus } from '../lib/api'
 
   // Automatic certificates for a public ending: pick where the domain's DNS
@@ -71,7 +72,7 @@
     } finally { busy = false }
   }
   function retry() { view = 'form'; error = ''; showDetail = false }
-  const until = $derived(status?.notAfter ? new Date(status.notAfter).toLocaleDateString() : '')
+  const until = $derived(status?.notAfter ? isoDate(status.notAfter) : '')
 </script>
 
 {#if view === 'loading'}
