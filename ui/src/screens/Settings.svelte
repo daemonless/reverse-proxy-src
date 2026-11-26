@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { isoDate } from '../lib/when'
   import { get, put, post, del, ApiError, type Settings, type Token, type Status, type DnsCheck, type TrustInfo, type Certificates, type PodmanSource } from '../lib/api'
   import { session } from '../lib/session.svelte'
   import { navigate } from '../lib/router.svelte'
@@ -45,7 +46,7 @@
     const st = certs?.status
     if (!st || st.state === 'manual') return ''
     if (st.state === 'ok' && st.message) return st.message
-    if (st.state === 'ok') return `Valid until ${new Date(st.notAfter ?? '').toLocaleDateString()}; it renews itself.`
+    if (st.state === 'ok') return `Valid until ${isoDate(st.notAfter ?? '')}; it renews itself.`
     if (st.state === 'trial') return 'Checking the token with a test certificate…'
     if (st.state === 'issuing') return 'Getting the certificate from Let\'s Encrypt…'
     return st.message ?? ''
@@ -328,7 +329,7 @@
         {#if trust?.fingerprint && trust.needed}
           <div class="flex flex-col gap-1">
             <div class="font-mono text-[13px] leading-relaxed break-all text-muted select-all">{trust.fingerprint}</div>
-            <div class="hint">Valid until {new Date(trust.notAfter ?? '').toLocaleDateString()}. Keep a backup: a new root means every device trusts the proxy again.</div>
+            <div class="hint">Valid until {isoDate(trust.notAfter ?? '')}. Keep a backup: a new root means every device trusts the proxy again.</div>
           </div>
         {/if}
       </div>
@@ -478,7 +479,7 @@
                      count. -->
                 {#if t.lastUsedAt}
                   <span class="text-sm flex items-center gap-2">{t.label}<span class="flex items-center gap-1.5 text-sm text-success-soft-fg"><span class="w-2 h-2 rounded-full bg-[color:var(--success)]"></span>Connected</span></span>
-                  <span class="hint">{#if t.clientId}Linked by code; {came(namesFrom(t))}.{:else}By key{namesFrom(t) ? `; ${came(namesFrom(t))}` : ''}, last used {new Date(t.lastUsedAt).toLocaleDateString()}.{/if}{#if t.url}&nbsp;·&nbsp;<a class="text-accent" href={t.url}>Open {t.label}</a>{/if}</span>
+                  <span class="hint">{#if t.clientId}Linked by code; {came(namesFrom(t))}.{:else}By key{namesFrom(t) ? `; ${came(namesFrom(t))}` : ''}, last used {isoDate(t.lastUsedAt)}.{/if}{#if t.url}&nbsp;·&nbsp;<a class="text-accent" href={t.url}>Open {t.label}</a>{/if}</span>
                 {:else}
                   <span class="text-sm flex items-center gap-2">{t.label}<span class="flex items-center gap-1.5 text-sm text-muted"><span class="w-2 h-2 rounded-full border-2 border-[color:var(--muted)] box-border"></span>Not used yet</span></span>
                   <span class="hint">{#if t.clientId}Linked by code; it has not called yet.{:else}A key was made for it; nothing has called with it so far.{/if}</span>

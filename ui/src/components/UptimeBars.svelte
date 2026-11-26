@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { isoDate, isoDateTime } from '../lib/when'
   import type { Slot } from '../lib/uptime'
 
   // One thin bar per hour or day: green all answered, red none, amber some,
@@ -12,9 +13,7 @@
     return 'var(--warning)'
   }
   function label(s: Slot) {
-    const at = unit === 'hour'
-      ? s.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      : s.start.toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' })
+    const at = unit === 'hour' ? isoDateTime(s.start) : isoDate(s.start)
     if (s.checks === 0) return `${at}: not checked`
     if (s.up === s.checks) return `${at}: up`
     return `${at}: down ${s.checks - s.up} of ${s.checks} checks`

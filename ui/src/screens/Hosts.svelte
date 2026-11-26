@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { isoDate } from '../lib/when'
   import { get, post, containerOf, type Host, type Health, type Uptime, type Settings, type Certificates, type CertStatus, type DnsCheck, type PodmanSource } from '../lib/api'
   import { link, navigate } from '../lib/router.svelte'
   import { deviceTrust } from '../lib/trust.svelte'
@@ -102,7 +103,7 @@
     const at = `${h.target.address}, port ${h.target.port}`
     if (s?.self) return { text: `Points back at this proxy · edit it and give the address the service has, not ${h.target.address}`, ok: false }
     if (h.goneSince) {
-      const until = new Date(new Date(h.goneSince).getTime() + 7 * 864e5).toLocaleDateString()
+      const until = isoDate(new Date(h.goneSince).getTime() + 7 * 864e5)
       return { text: `Container stopped since ${when(h.goneSince)} · the name comes back with it, or goes on ${until}`, ok: false }
     }
     if (u?.state === 'down' && u.never) return { text: `Never reached · check that the proxy can reach ${at}`, ok: false }

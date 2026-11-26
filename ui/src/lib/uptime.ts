@@ -1,3 +1,4 @@
+import { isoDateTime } from './when'
 import type { Hour } from './api'
 
 /** One bar: its start, the checks in it, how many answered. */
@@ -49,10 +50,10 @@ export function covers(from: string | undefined, days: number, now = new Date())
   return !!from && new Date(from).getTime() <= now.getTime() - days * 86400000
 }
 
-/** "30 days", or "since 10:06" when the history is younger than that. */
+/** "30 days", or "since 2026-11-24 10:06" when the history is younger than that. */
 export function span(from: string | undefined, days: number, now = new Date()): string {
   if (!from || covers(from, days, now)) return `${days} days`
-  return `since ${when(from, now)}`
+  return `since ${when(from)}`
 }
 
 /** 40 s, 12 min, 3 h 5 min, 2 days */
@@ -64,11 +65,7 @@ export function lasted(ms: number): string {
   return `${Math.floor(m / 1440)} days`
 }
 
-/** "14:02" today, "Tue 03:10" this week, "12 Oct 03:10" before. */
-export function when(iso: string, now = new Date()): string {
-  const d = new Date(iso)
-  const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  if (d.toDateString() === now.toDateString()) return time
-  if (now.getTime() - d.getTime() < 6 * 86400000) return `${d.toLocaleDateString([], { weekday: 'short' })} ${time}`
-  return `${d.toLocaleDateString([], { day: 'numeric', month: 'short' })} ${time}`
+/** "2026-11-24 03:10" */
+export function when(iso: string): string {
+  return isoDateTime(iso)
 }

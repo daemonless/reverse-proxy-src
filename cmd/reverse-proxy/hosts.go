@@ -296,7 +296,7 @@ func (h *hostsCLI) remove(args []string) int {
 	if err := h.call("DELETE", "/api/v1/hosts/"+x.ID, nil, &res); err != nil {
 		return h.fail(err)
 	}
-	fmt.Fprintf(h.out, "Removed %s. Until %s you can bring it back:\n\n    reverse-proxy hosts restore %s\n", x.Names[0], res.UndoUntil.Local().Format("15:04 on Jan 2"), x.Name)
+	fmt.Fprintf(h.out, "Removed %s. Until %s you can bring it back:\n\n    reverse-proxy hosts restore %s\n", x.Names[0], res.UndoUntil.Local().Format("2006-01-02 15:04"), x.Name)
 	return 0
 }
 

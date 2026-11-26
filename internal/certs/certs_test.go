@@ -110,7 +110,7 @@ func TestCompute(t *testing.T) {
 	// A rejected token is said at once, while the certificate still works.
 	okUntil := Observation{Issuer: IssuerLetsEncrypt, NotAfter: time.Date(2026, 11, 7, 9, 0, 0, 0, time.Local)}
 	s = Compute(pub(state.StageLive), okUntil, newErr, nil, "example.com", now)
-	if s.State != "ok" || !strings.Contains(s.Message, "Cloudflare stopped accepting your token") || !strings.Contains(s.Message, "Nov 7") || s.Fix != "token" {
+	if s.State != "ok" || !strings.Contains(s.Message, "Cloudflare stopped accepting your token") || !strings.Contains(s.Message, "2026-11-07") || s.Fix != "token" {
 		t.Fatalf("rejected on renewal: %+v", s)
 	}
 	caa := &Event{At: now, Error: "urn:ietf:params:acme:error:caa: CAA record for example.com prevents issuance"}
